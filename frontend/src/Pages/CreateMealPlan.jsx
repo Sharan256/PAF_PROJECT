@@ -246,7 +246,7 @@ const CreateMealPlan = () => {
                 value={selectedDietaryPreference}
                 onChange={(e) => setSelectedDietaryPreference(e.target.value)}
               >
-                <option value="vegan">Vegan</option>
+                <option value="vegan">Vegan</option>  //
                 <option value="vegetarian">Vegetarian</option>
                 <option value="keto">Keto</option>
                 <option value="gluten-free">Gluten-Free</option>

@@ -1,15 +1,4 @@
-import React, { useEffect, useState } from "react";
-import Layout from "../components/Layout";
-import { TEInput, TETextarea } from "tw-elements-react";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { app } from "../db/firebase";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import toast from "react-hot-toast";
-import backgroundImg from "../images/PostBac.jpg";
+
 
 const storage = getStorage(app);
 
