@@ -117,4 +117,4 @@ const WorkoutStatus = ({ user }) => {
   );
 };
 
-export default WorkoutStatus;
+

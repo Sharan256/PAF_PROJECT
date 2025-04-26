@@ -38,7 +38,9 @@ const Register = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-  }
+  } = useForm({
+    resolver: yupResolver(formSchema),
+  });
 
   function onImageChange(e) {
     const selectedFiles = e.target.files;
