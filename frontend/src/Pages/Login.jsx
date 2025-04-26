@@ -59,16 +59,7 @@ export default function Login() {
     }
   };
 
-  return (
-    <div
-      className="bg-indigo-50 "
-      style={{
-        backgroundImage: `url(${backgroundImg})`,
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundAttachment: "fixed",
-      }}
+  
     >
       <section className="h-screen flex items-center justify-center p-20">
         <div className="container h-full p-10">

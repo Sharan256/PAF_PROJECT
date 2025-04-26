@@ -1,4 +1,8 @@
-
+import { useEffect, useState } from "react";
+import Layout from "../components/Layout";
+import { useParams } from "react-router-dom";
+import axios from "axios"; //sd
+import PostsList from "../components/PostsList";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -82,6 +86,7 @@ const Profile = () => {
           {/* <section className=" flex items-center top-0 bg-opacity-95 ">
             <p className="py-5 text-xl font-bold  ml-1 ">{user?.name}</p>
           </section> */}
+    
 
           <section>
             <img
