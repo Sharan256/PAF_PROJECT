@@ -1,4 +1,13 @@
-
+import React, { useEffect, useState } from "react";
+import Layout from "../components/Layout";
+import backgroundImg from "../images/mealBck1.jpg";
+import { useNavigate, useParams } from "react-router-dom";
+import { TEInput, TETextarea } from "tw-elements-react";
+import { useActiveTab } from "../context/ActiveTabContext";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { app } from "../db/firebase";
 
 const storage = getStorage(app);
 
@@ -238,7 +247,7 @@ const CreateMealPlan = () => {
                 value={selectedDietaryPreference}
                 onChange={(e) => setSelectedDietaryPreference(e.target.value)}
               >
-                <option value="vegan">Vegan</option>
+                <option value="vegan">Vegan</option>  //
                 <option value="vegetarian">Vegetarian</option>
                 <option value="keto">Keto</option>
                 <option value="gluten-free">Gluten-Free</option>
