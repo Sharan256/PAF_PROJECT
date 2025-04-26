@@ -35,8 +35,7 @@ const WorkoutStatus = ({ user }) => {
       );
 
       toast.success("Workout status deleted successfully");
-    } catch (error) {
-      toast.error("Failed to delete workout status");
+    } 
     }
   };
 
@@ -117,4 +116,4 @@ const WorkoutStatus = ({ user }) => {
   );
 };
 
-
+export default WorkoutStatus;
