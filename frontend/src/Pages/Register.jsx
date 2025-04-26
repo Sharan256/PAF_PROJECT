@@ -30,6 +30,7 @@ const formSchema = yup.object().shape({
 
 const storage = getStorage(app);
 
+// Register
 const Register = () => {
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
