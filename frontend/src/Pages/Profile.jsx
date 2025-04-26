@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import Layout from "../components/Layout";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import PostsList from "../components/PostsList";
+
 
 const Profile = () => {
   const [user, setUser] = useState(null);
