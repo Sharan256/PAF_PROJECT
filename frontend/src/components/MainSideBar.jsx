@@ -2,7 +2,8 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FaHome, FaPlus, FaClipboardList, FaUtensils, FaSignOutAlt, FaUsers } from "react-icons/fa";
 
-const MainSideBar = ({ user, isOpen }) => {
+//Main Side Bar
+const MainSideBar = ({ user, toggleSideBar2 }) => {
   const handleLogout = async () => {
     try {
       window.location.href = "http://localhost:8080/logout";
