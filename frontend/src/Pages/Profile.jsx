@@ -80,12 +80,7 @@ const Profile = () => {
   };
 
   return (
-    <Layout>
-      <div className="w-full flex items-center justify-center flex-col bg-gray-100">
-        <div className=" w-[800px] bg-white rounded-lg">
-          {/* <section className=" flex items-center top-0 bg-opacity-95 ">
-            <p className="py-5 text-xl font-bold  ml-1 ">{user?.name}</p>
-          </section> */}
+    
 
           <section>
             <img
