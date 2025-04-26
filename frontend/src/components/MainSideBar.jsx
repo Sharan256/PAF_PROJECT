@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 
+//Main Side Bar
 const MainSideBar = ({ user, toggleSideBar2 }) => {
   const handleLogout = async () => {
     try {
