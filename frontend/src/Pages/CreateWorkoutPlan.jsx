@@ -17,6 +17,7 @@ const workoutTypes = [
   { name: "Legs", image: legsImg },
 ];
 
+//Create workout plan
 const CreateWorkoutPlan = () => {
   const [selectedWorkout, setSelectedWorkout] = useState("Chest");
   const [exercises, setExercises] = useState("");
