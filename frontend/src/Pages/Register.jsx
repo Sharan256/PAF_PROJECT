@@ -1,14 +1,4 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { TEInput, TERipple } from "tw-elements-react";
-import * as yup from "yup";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { app } from "../db/firebase";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-hot-toast";
-import backgroundImg from "../images/bck.jpg";
+
 
 const formSchema = yup.object().shape({
   username: yup.string().required().min(3).max(20),
