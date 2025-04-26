@@ -83,7 +83,7 @@ const Home = () => {
   return (
     <Layout>
       <>
-        <div>
+        <div className="mb-3 ">
           <TETabs fill className="">
             <TETabsItem
               onClick={() => setActiveTab("tab1")}

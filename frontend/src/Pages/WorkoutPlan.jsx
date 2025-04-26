@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai';
-import backgroundImg from '../images/workoutBck.jpg';
+import backgroundImg from '../images/statusBck.jpg';
 
 
 const WorkoutPlan = ({ user }) => {
@@ -15,7 +15,7 @@ const WorkoutPlan = ({ user }) => {
   useEffect(() => {
     const fetchWorkoutPlans = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/workoutPlans");
+        const res = await axios.get("http://localhost:8080/workoutPlan");
         if (res.status === 200) {
           setWorkoutPlans(res.data);
         }
@@ -27,25 +27,21 @@ const WorkoutPlan = ({ user }) => {
   }, []);
 
   // Delete Workout Plans by ID
-  const deleteWorkOutPlan = async (workoutplans) => {
+  const deleteWorkoutPlan = async (plan) => {
     try {
-      await axios.delete(
-        `http://localhost:8080/workoutPlans/${workoutplans.workoutPlanId}`
+      await axios.delete(`http://localhost:8080/workoutPlan/${plan.planId}`);
+      setWorkoutPlans((prevPlans) =>
+        prevPlans.filter((p) => p.planId !== plan.planId)
       );
-
-      setWorkoutPlans((prevWokoutPlans) =>
-        prevWokoutPlans.filter((wp) => wp.workoutPlanId !== workoutplans.workoutPlanId)
-      );
-
-      toast.success("Workout Plan deleted successfully");
+      toast.success("Workout plan deleted successfully");
     } catch (error) {
-      toast.error("Failed to delete workout Plan");
+      toast.error("Failed to delete workout plan");
     }
   };
 
 
-  const navigateEditPage = (workoutplans) => {
-    navigate(`/CreateWorkoutPlan/${workoutplans.workoutPlanId}`);
+  const navigateEditPage = (plan) => {
+    navigate(`/CreateWorkoutPlan/${plan.planId}`);
   };
 
   // Function to handle click event
@@ -74,63 +70,65 @@ const WorkoutPlan = ({ user }) => {
       </div>
 
       <div className="space-y-4 flex justify-center flex-col items-center">
-        {workoutPlans.map((workoutplans, index) => (
+        {workoutPlans.map((plan, index) => (
           <div
             key={index}
-            className="bg-white shadow-lg rounded-lg p-4 w-[600px]"
+            className="bg-white shadow-lg rounded-lg p-6 w-[600px] hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="flex justify-between ">
-              <div className="flex gap-3">
-                <div>
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center space-x-4">
+                <div className="relative">
                   <img
-                    src={workoutplans?.userProfile}
+                    src={plan?.userProfile}
                     alt="user"
-                    className="w-14 h-14 rounded-full"
+                    className="w-12 h-12 rounded-full object-cover"
                   />
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold">
-                    {workoutplans?.username}
-                  </h2>
-                  <p className="text-sm font-bold mb-2">
-                    Workout on {workoutplans.date}
-                  </p>
+                  <h2 className="text-lg font-semibold text-gray-800">{plan?.username}</h2>
+                  <p className="text-sm text-gray-500">Plan for {plan.date}</p>
                 </div>
               </div>
-              <div className="gap-3 flex">
-                {user?.id === workoutplans?.userId && (
+              <div className="flex space-x-3">
+                {user?.id === plan?.userId && (
                   <>
-                    <AiFillDelete
-                      size={20}
-                      color="red"
-                      className="cursor-pointer"
-                      onClick={() => deleteWorkOutPlan(workoutplans)}
-                    />
-                    <AiFillEdit
-                      size={20}
-                      color="blue"
-                      className="cursor-pointer"
-                      onClick={() => navigateEditPage(workoutplans)}
-                    />
+                    <button
+                      onClick={() => deleteWorkoutPlan(plan)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <AiFillDelete size={20} />
+                    </button>
+                    <button
+                      onClick={() => navigateEditPage(plan)}
+                      className="text-blue-500 hover:text-blue-700 transition-colors"
+                    >
+                      <AiFillEdit size={20} />
+                    </button>
                   </>
                 )}
               </div>
             </div>
-
-            <div>
-              <div className="list-disc pl-5 space-y-1 mt-2">
-                <h2 className="text-xl font-semibold mb-2">
-                  {workoutplans.workoutPlanName}
-                </h2>
-                <p className="font-medium">
-                  Exercise: {workoutplans.exercises}
-                </p>
-                <p className="text-sm">Sets: {workoutplans.sets}</p>
-                <p className="text-sm">
-                  Repetitions: {workoutplans.repetitions}
-                </p>
-                <p className="text-sm">Routine: {workoutplans.routine}</p>
-                <p className="text-sm italic">"{workoutplans.description}"</p>
+            
+            <div className="space-y-3 mt-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-purple-50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-600">Target Distance</p>
+                  <p className="text-lg font-semibold">{plan.targetDistance} <span className="text-sm">km</span></p>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-600">Target Push-ups</p>
+                  <p className="text-lg font-semibold">{plan.targetPushUps}</p>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-600">Target Weight</p>
+                  <p className="text-lg font-semibold">{plan.targetWeight} <span className="text-sm">kg</span></p>
+                </div>
+              </div>
+              
+              <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-md font-semibold text-gray-700 mb-2">Plan Description</h3>
+                <p className="text-gray-600">{plan.description}</p>
               </div>
             </div>
           </div>
