@@ -219,7 +219,7 @@ const PostsList = ({
                   style={{ maxWidth: "570px", height: "auto" }}
                 >
                   <source src={post?.video} type="video/mp4" />
-                  Your browser does not support the video tag.
+                  Your browser does not support this video. Please update your browser or try using a different one.
                 </video>
               </>
             )}
