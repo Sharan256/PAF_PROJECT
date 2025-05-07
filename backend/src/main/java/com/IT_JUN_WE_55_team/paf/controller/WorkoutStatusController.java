@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.IT_JUN_WE_55_team.paf.model.WorkoutStatus;
 import com.IT_JUN_WE_55_team.paf.service.WorkoutStatusService;
 
+//Status Controller
+
 @RestController
 @RequestMapping("/workoutStatus")
 public class WorkoutStatusController {
