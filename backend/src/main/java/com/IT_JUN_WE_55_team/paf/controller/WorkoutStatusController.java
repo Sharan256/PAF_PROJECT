@@ -56,6 +56,8 @@ public class WorkoutStatusController {
         }
     }
 
+    //Delete Mapping
+
     @DeleteMapping("/{statusId}")
     public ResponseEntity<Void> deleteWorkoutStatus(@PathVariable String statusId) {
         workoutStatusService.deleteWorkoutStatus(statusId);
