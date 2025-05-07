@@ -25,6 +25,7 @@ const WorkoutStatus = ({ user }) => {
     fetchWorkoutStatuses();
   }, []);
 
+  //Delete Workout
   const deleteWorkOut = async (status) => {
     try {
       await axios.delete(
