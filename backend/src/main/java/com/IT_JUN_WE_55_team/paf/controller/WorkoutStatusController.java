@@ -39,6 +39,7 @@ public class WorkoutStatusController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    //Post Mapping
     @PostMapping
     public ResponseEntity<WorkoutStatus> createWorkoutStatus(@RequestBody WorkoutStatus workoutStatus) {
         WorkoutStatus savedWorkoutStatus = workoutStatusService.createWorkoutStatus(workoutStatus);
