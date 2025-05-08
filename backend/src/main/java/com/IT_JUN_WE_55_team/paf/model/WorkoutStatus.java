@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-//Class
+//Class Definition
 
 public class WorkoutStatus {
 
