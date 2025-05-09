@@ -54,6 +54,7 @@ const CreateWorkouStatus = () => {
       return toast.error("Please fill all the fields");
     }
 
+    //Workout Status Data
     const workoutStatusData = {
       userId: user.id,
       distance,
