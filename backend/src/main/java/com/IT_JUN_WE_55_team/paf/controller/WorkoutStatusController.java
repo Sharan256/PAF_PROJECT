@@ -27,6 +27,7 @@ public class WorkoutStatusController {
     @Autowired
     private WorkoutStatusService workoutStatusService;
 
+    //Get Mapping
     @GetMapping
     public List<WorkoutStatus> getAllWorkoutStatus() {
         return workoutStatusService.getAllWorkoutStatus();
