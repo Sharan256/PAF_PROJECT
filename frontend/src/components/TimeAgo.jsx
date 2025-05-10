@@ -14,4 +14,4 @@ const TimeAgo = ({ date }) => {
   );
 };
 
-
+export default TimeAgo;
