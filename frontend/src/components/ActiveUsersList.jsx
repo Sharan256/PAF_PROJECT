@@ -7,7 +7,9 @@ const ActiveUsersList = ({ loggedInUser }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Function to fetch users from backend API
+    // Function to fetch users from backend  API
+
+    // Set interval to re-fetch users every 30 seconds (polling)
     const fetchUsers = async () => {
       try {
         const res = await axios.get("http://localhost:8080/users");
