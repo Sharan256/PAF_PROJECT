@@ -39,14 +39,7 @@ export default function Register() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    trigger,
-  } = useForm({
-    resolver: yupResolver(formSchema),
-  });
+  
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
