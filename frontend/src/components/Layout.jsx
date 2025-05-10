@@ -24,6 +24,7 @@ const Layout = ({ children }) => {
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-white/80 backdrop-blur-sm shadow-lg hover:bg-white transition-colors duration-200 md:hidden"
       >
+        {/* Toggle icon based on sidebar state */}
         {isSidebarOpen ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
       </button>
       {/* Sidebar component receives user info and open/close state */}
