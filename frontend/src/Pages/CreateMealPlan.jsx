@@ -219,7 +219,7 @@ const CreateMealPlan = () => {
                 >
                  Select Meal Type
                 </label>
-              <select
+                <select
                 name="mealType"
                 className="border rounded h-10 w-full p-2 mt-4"
                 value={selectedMealType}
