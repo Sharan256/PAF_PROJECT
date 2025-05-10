@@ -22,7 +22,7 @@ const formSchema = yup.object().shape({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
       "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one special symbol"
     ),
-  confirmPassword: yup
+  confirmPassword: yup// yup for password
     .string()
     .required("Confirm Password is required")
     .oneOf([yup.ref("password")], "Passwords must match"),
