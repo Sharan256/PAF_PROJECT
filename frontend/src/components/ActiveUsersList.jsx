@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const ActiveUsersList = ({ loggedInUser }) => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]);// State to hold all users
   const navigate = useNavigate();
 
   useEffect(() => {
