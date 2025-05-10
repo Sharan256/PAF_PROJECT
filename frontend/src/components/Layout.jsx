@@ -8,6 +8,7 @@ const Layout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
    // State to control whether the sidebar is open or closed
   const [user, setUser] = useState(null);
+  // State to store user data
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
