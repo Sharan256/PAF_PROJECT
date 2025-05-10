@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const ActiveUsersList = ({ loggedInUser }) => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]);// State to hold all users
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,7 +12,7 @@ const ActiveUsersList = ({ loggedInUser }) => {
         const res = await axios.get("http://localhost:8080/users");
         setUsers(res.data);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error);a
       }
     };
     fetchUsers();

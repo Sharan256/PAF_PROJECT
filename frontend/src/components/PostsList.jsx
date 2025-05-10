@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
+// Main component for rendering individual posts
 const PostsList = ({
   post,
   user,
