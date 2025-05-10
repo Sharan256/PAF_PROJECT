@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -15,7 +17,7 @@ const WorkoutPlan = ({ user }) => {
   useEffect(() => {
     const fetchWorkoutPlans = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/workoutPlan");
+        const res = await axios.get("http://localhost:8080/workoutPlans");
         if (res.status === 200) {
           setWorkoutPlans(res.data);
         }
@@ -29,7 +31,7 @@ const WorkoutPlan = ({ user }) => {
   // Delete Workout Plans by ID
   const deleteWorkoutPlan = async (plan) => {
     try {
-      await axios.delete(`http://localhost:8080/workoutPlan/${plan.planId}`);
+      await axios.delete(`http://localhost:8080/workoutPlans/${plan.planId}`);
       setWorkoutPlans((prevPlans) =>
         prevPlans.filter((p) => p.planId !== plan.planId)
       );
