@@ -24,16 +24,7 @@ const MealPlan = ({ user }) => {
     fetchMealPlans();
   }, []);
 
-  // Delete Meal Plan by ID
-  const deleteMealPlan = async (mealPlan) => {
-    try {
-      await axios.delete(`http://localhost:8080/mealPlans/${mealPlan.mealPlanId}`);
-      setMealPlans(prevMealPlans => prevMealPlans.filter(mp => mp.mealPlanId !== mealPlan.mealPlanId));
-      toast.success("Meal Plan deleted successfully");
-    } catch (error) {
-      toast.error("Failed to delete Meal Plan");
-    }
-  };
+
 
   const navigateEditPage = (mealPlan) => {
     navigate(`/CreateMealPlan/${mealPlan.mealPlanId}`);
