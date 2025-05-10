@@ -169,7 +169,7 @@ const Post = () => {
       }
     }
 
-    console.log(user);
+    // console.log(user);
     if (user) {
       if (imageSelected) {
         const imageUrls = [];
