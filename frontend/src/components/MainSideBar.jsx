@@ -61,7 +61,7 @@ const MainSideBar = ({ user, isOpen }) => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={({ isActive }) =>
+                className={({ isActive }) => 
                   `flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
                     isActive
                       ? "bg-purple-600 text-white shadow-lg"

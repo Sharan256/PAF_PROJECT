@@ -105,7 +105,7 @@ export default function Register() {
       <div className="w-full max-w-md">
         <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Create New Account</h2>
             <p className="text-gray-600">Join Fitness Hub today</p>
           </div>
 
@@ -211,10 +211,9 @@ export default function Register() {
                 <p className="mt-1 text-sm text-red-500">{errors.confirmPassword.message}</p>
               )}
             </div>
-
-            {/* Phone Number Input */}
+            
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1"> 
                 Phone Number
               </label>
               <input
@@ -222,14 +221,14 @@ export default function Register() {
                 {...register("phone")}
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
                 placeholder="Enter your phone number"
-                onChange={(e) => trigger("phone")}
+                onChange={(e) => trigger("phone")}  //uuuuuu
               />
               {errors.phone && (
                 <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
               )}
             </div>
 
-            {/* Submit Button */}
+            
             <button
               type="submit"
               disabled={isSubmitting}
@@ -244,7 +243,7 @@ export default function Register() {
               <div className="flex-1 h-px bg-gray-300"></div>
             </div>
 
-            {/* Google Sign Up Button */}
+
             <button
               type="button"
               onClick={handleGoogleLogin}
