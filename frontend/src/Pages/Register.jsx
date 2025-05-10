@@ -243,7 +243,7 @@ export default function Register() {
               <div className="flex-1 h-px bg-gray-300"></div>
             </div>
 
-            {/* Google Sign Up Button */}
+
             <button
               type="button"
               onClick={handleGoogleLogin}
