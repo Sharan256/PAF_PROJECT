@@ -5,6 +5,7 @@ import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import backgroundImg from '../images/statusBck.jpg';
 
+//Workout Status
 const WorkoutStatus = ({ user }) => {
   const [workoutStatuses, setWorkoutStatuses] = useState([]);
 
@@ -24,6 +25,7 @@ const WorkoutStatus = ({ user }) => {
     fetchWorkoutStatuses();
   }, []);
 
+  //Delete Workout
   const deleteWorkOut = async (status) => {
     try {
       await axios.delete(
@@ -40,6 +42,7 @@ const WorkoutStatus = ({ user }) => {
     }
   };
 
+//Navigate edit page
   const navigateEditPage = (status) => {
     navigate(`/CreateWorkoutStatus/${status.statusId}`);
   };

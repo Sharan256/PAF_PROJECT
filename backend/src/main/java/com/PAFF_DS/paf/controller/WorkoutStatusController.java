@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.PAFF_DS.paf.model.WorkoutStatus;
 import com.PAFF_DS.paf.service.WorkoutStatusService;
 
+//Status Controller
+
 @RestController
 @RequestMapping("/workoutStatus")
 public class WorkoutStatusController {
@@ -25,6 +27,7 @@ public class WorkoutStatusController {
     @Autowired
     private WorkoutStatusService workoutStatusService;
 
+    //Get Mapping
     @GetMapping
     public List<WorkoutStatus> getAllWorkoutStatus() {
         return workoutStatusService.getAllWorkoutStatus();
@@ -37,6 +40,7 @@ public class WorkoutStatusController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    //Post Mapping
     @PostMapping
     public ResponseEntity<WorkoutStatus> createWorkoutStatus(@RequestBody WorkoutStatus workoutStatus) {
         WorkoutStatus savedWorkoutStatus = workoutStatusService.createWorkoutStatus(workoutStatus);
@@ -53,6 +57,8 @@ public class WorkoutStatusController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    //Delete Mapping
 
     @DeleteMapping("/{statusId}")
     public ResponseEntity<Void> deleteWorkoutStatus(@PathVariable String statusId) {
