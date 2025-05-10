@@ -8,6 +8,7 @@ const SideBar2 = ({ logUser }) => {
   // const [logUser, setLogUser] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch users on component mount
   useEffect(() => {
     const fetchUsers = async () => {
       try {
