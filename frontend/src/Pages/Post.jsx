@@ -272,15 +272,7 @@ const Post = () => {
             console.log(error);
           }
         } else {
-          try {
-            const res = await axios.post(
-              "http://localhost:8080/posts",
-              videoPostData
-            );
-            console.log(res);
-            setIsUploadSuccess(true);
-            navigate("/");
-            toast.success("Post uploaded successfully");
+          toast.success("Post uploaded successfully");
           } catch (error) {
             console.log(error);
           }
