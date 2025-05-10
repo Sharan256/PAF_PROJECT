@@ -17,5 +17,5 @@ public class SharePostModel {
     private String userId;
     private Post post;
     private String description;
-    private String shared;
+    
 }
