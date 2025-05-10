@@ -7,6 +7,7 @@ const ActiveUsersList = ({ loggedInUser }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Function to fetch users from backend API
     const fetchUsers = async () => {
       try {
         const res = await axios.get("http://localhost:8080/users");
