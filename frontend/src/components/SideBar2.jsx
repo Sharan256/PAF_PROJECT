@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Component receives `logUser` prop to identify the logged-in user
 const SideBar2 = ({ logUser }) => {
   const [users, setUsers] = useState(null);
   // const [logUser, setLogUser] = useState(null);
