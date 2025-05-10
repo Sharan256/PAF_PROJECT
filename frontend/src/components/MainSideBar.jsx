@@ -29,10 +29,7 @@ const MainSideBar = ({ user, isOpen }) => {
       <div className="flex flex-col h-full">
         {/* Profile Section */}
         <div className="p-6">
-          <Link
-            to={`/profile/${user?.id}`}
-            className="flex items-center space-x-4 group"
-          >
+          
             <div className="relative">
               <div className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 p-[2px]">
                 <div className="w-full h-full rounded-full border-2 border-white">
