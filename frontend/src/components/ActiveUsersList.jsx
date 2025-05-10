@@ -16,7 +16,7 @@ const ActiveUsersList = ({ loggedInUser }) => {
         console.error('Error fetching users:', error);a
       }
     };
-    fetchUsers();
+    fetchUsers();// Initial fetch on component mount
 
     // Poll for active users every 30 seconds
     const interval = setInterval(fetchUsers, 30000);
