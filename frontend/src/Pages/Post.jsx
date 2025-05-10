@@ -126,7 +126,7 @@ const Post = () => {
         message: "Maximum of 3 images allowed",
       });
     } else {
-      // clearErrors("images");
+      clearErrors("images");
       setImages([...selectedFiles]);
     }
   }
