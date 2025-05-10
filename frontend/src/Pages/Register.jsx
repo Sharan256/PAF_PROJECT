@@ -45,7 +45,7 @@ export default function Register() {
     formState: { errors, isSubmitting },
     trigger,
   } = useForm({
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchema), //useform
   });
 
   const handleImageChange = (e) => {
