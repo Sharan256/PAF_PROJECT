@@ -186,11 +186,7 @@ const CreateMealPlan = () => {
     }
   };
 
-  const navigate = useNavigate();
 
-  const goToMealPlans = () => {
-    navigate("/");
-  };
 
   return (
     <Layout>
