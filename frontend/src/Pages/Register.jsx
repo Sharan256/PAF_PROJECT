@@ -123,9 +123,7 @@ const Register = () => {
                   {...register("username")}
                   isInvalid={errors.username}
                 ></TEInput>
-                <p className="mb-6 text-sm text-red-500">
-                  {errors.username?.message}
-                </p>
+                
 
                 <TEInput
                   type="email"
