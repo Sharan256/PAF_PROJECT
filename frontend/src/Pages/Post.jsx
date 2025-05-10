@@ -193,7 +193,7 @@ const Post = () => {
 
         const postData = {
           title: data.title,
-          description: data.description,//description
+          description: data.description,
           images: imageUrls,
           userId: user.id,
           username: user.name,
