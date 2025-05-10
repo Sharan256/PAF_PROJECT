@@ -46,7 +46,7 @@ const PostsList = ({
   const navigateEditPage = () => {
     navigate(`/post/${post.id}`);
   };
-
+// Delete a post
   const deletePost = async (post) => {
     try {
       await axios.delete(`http://localhost:8080/posts/${post.id}`);
