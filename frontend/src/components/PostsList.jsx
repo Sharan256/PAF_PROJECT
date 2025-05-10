@@ -42,11 +42,11 @@ const PostsList = ({
       console.log(error);
     }
   };
-
+// Navigate to post edit page
   const navigateEditPage = () => {
     navigate(`/post/${post.id}`);
   };
-
+// Delete a post
   const deletePost = async (post) => {
     try {
       await axios.delete(`http://localhost:8080/posts/${post.id}`);
@@ -56,7 +56,7 @@ const PostsList = ({
       console.log(error);
     }
   };
-
+  // Add or update a comments
   const commentAdd = async (e) => {
     e.preventDefault();
     if (!comment) return toast.error("Comment is required");
