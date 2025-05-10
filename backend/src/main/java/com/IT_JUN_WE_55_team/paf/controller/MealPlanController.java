@@ -53,10 +53,4 @@ public class MealPlanController {
         }
     }
 
-    @DeleteMapping("/{mealPlanId}")
-    public ResponseEntity<Void> deleteMealPlan(@PathVariable String mealPlanId) {
-        mealPlanService.deleteMealPlan(mealPlanId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 
-}
