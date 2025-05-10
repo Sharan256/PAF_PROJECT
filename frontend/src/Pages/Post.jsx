@@ -249,14 +249,7 @@ const Post = () => {
           userProfile: user.profileImage,
         };
 
-        const videoPostData = {
-          title: data.title,
-          description: data.description,
-          video: videoUrl,
-          userId: user.id,
-          username: user.name,
-          userProfile: user.profileImage,
-        };
+       
 
         if (editPost) {
           try {
