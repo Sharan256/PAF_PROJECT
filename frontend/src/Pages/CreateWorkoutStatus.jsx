@@ -63,7 +63,8 @@ const CreateWorkouStatus = () => {
       description,
       date,
     };
-
+    
+    //Update Workout Status Data
     const updateWorkoutStatusData = {
       userId: user.id,
       distance,
