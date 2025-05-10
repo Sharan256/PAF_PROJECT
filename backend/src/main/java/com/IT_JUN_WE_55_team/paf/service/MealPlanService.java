@@ -12,7 +12,6 @@ public interface MealPlanService {
 
     MealPlan createMealPlan(MealPlan mealPlan);
 
-    MealPlan updatMealPlan(String mealPlanId, MealPlan mealPlan);
 
     void deleteMealPlan(String mealPlanId);
 }
