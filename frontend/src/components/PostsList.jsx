@@ -17,7 +17,6 @@ import { FaImage, FaPaperPlane } from "react-icons/fa6";
 const API_URL = "http://localhost:8080";
 const storage = getStorage(app);
 
-// Main component for rendering individual posts
 const PostsList = ({
   post,
   user,
@@ -53,7 +52,6 @@ const PostsList = ({
     navigate(`/profile/${userId}`);
   };
 
-  // Handle like/unlike button click
   const likeBtnClick = async (post) => {
     try {
       const res = await axios.post(
@@ -65,11 +63,11 @@ const PostsList = ({
       console.log(error);
     }
   };
-// Navigate to post edit page
+
   const navigateEditPage = () => {
     navigate(`/post/${post.id}`);
   };
-// Delete a post
+
   const deletePost = async (post) => {
     try {
       await axios.delete(`http://localhost:8080/posts/${post.id}`);
