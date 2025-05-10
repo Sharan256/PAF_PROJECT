@@ -10,7 +10,6 @@ import MealPlan from "./Pages/MealPlan";
 import CreateWorkoutStatus from "./Pages/CreateWorkoutStatus";
 import CreateWorkoutPlan from "./Pages/CreateWorkoutPlan";
 import CreateMealPlan from "./Pages/CreateMealPlan";
-import ActiveUsers from "./Pages/ActiveUsers";
 
 function App() {
   return (
@@ -40,7 +39,6 @@ function App() {
           path="/CreateWorkoutPlan/:workoutPlanId"
           element={<CreateWorkoutPlan />}
         />
-        <Route path="/active-users" element={<ActiveUsers />} />
       </Routes>
     </BrowserRouter>
   );
