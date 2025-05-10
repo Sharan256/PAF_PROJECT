@@ -29,7 +29,7 @@ const WorkoutPlan = ({ user }) => {
   }, []);
 
   // Delete Workout Plans by ID
-  const deleteWorkoutPlan = async (plan) => {
+  
     try {
       await axios.delete(`http://localhost:8080/workoutPlans/${plan.planId}`);
       setWorkoutPlans((prevPlans) =>
