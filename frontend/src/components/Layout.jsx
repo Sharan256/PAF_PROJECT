@@ -27,6 +27,8 @@ const Layout = ({ children }) => {
         {isSidebarOpen ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
       </button>
       <MainSideBar user={user} isOpen={isSidebarOpen} />
+
+      {/* Main content area, adjusts left margin based on sidebar state (for md+ screens) */}
       <main className={`transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-0'} pt-16`}>
         <div className="p-6">
           {React.Children.map(children, child =>
