@@ -14,7 +14,7 @@ const WorkoutPlan = ({ user }) => {
   const navigate = useNavigate();
 
 
-  
+  useEffect(() => {
     const fetchWorkoutPlans = async () => {
       try {
         const res = await axios.get("http://localhost:8080/workoutPlans");
