@@ -105,7 +105,7 @@ export default function Register() {
       <div className="w-full max-w-md">
         <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Create New Account</h2>
             <p className="text-gray-600">Join Fitness Hub today</p>
           </div>
 
