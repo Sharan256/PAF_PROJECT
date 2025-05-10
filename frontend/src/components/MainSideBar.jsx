@@ -54,7 +54,6 @@ const MainSideBar = ({ user, isOpen }) => {
           </Link>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-4 py-2 overflow-y-auto">
           <div className="space-y-2">
             {navItems.map((item) => (
