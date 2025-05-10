@@ -12,7 +12,7 @@ const ActiveUsersList = ({ loggedInUser }) => {
         const res = await axios.get("http://localhost:8080/users");
         setUsers(res.data);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error);a
       }
     };
     fetchUsers();
