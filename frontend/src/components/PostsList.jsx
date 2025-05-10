@@ -42,7 +42,7 @@ const PostsList = ({
       console.log(error);
     }
   };
-
+// Navigate to post edit page
   const navigateEditPage = () => {
     navigate(`/post/${post.id}`);
   };
