@@ -13,7 +13,7 @@ const storage = getStorage(app);
 
 const formSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
-  email: yup.string().email().required("Email is required"),
+  email: yup.string().email().required("Email is required"),// yup for email
   password: yup
     .string()
     .required("Password is required")
