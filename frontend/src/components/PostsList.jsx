@@ -56,7 +56,7 @@ const PostsList = ({
       console.log(error);
     }
   };
-
+  // Add or update a comments
   const commentAdd = async (e) => {
     e.preventDefault();
     if (!comment) return toast.error("Comment is required");
