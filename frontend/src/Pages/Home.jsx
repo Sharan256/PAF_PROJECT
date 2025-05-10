@@ -151,11 +151,11 @@ const Home = () => {
 
         {activeTab === "tab2" && (
           <div>
-            {/**
-             * 1. Create a new component called WorkoutStatusList
-             */}
-            <WorkoutStatus user={user} />
-          </div>
+          {/**
+           * 1. Create a new component called WorkoutStatusList
+           */}
+          <WorkoutStatus user={user} />
+        </div>
         )}
 
         {activeTab === "tab3" && (
