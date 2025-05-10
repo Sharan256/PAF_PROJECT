@@ -37,7 +37,7 @@ const MainSideBar = ({ user, isOpen }) => {
               <div className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 p-[2px]">
                 <div className="w-full h-full rounded-full border-2 border-white">
                   <img
-                    
+                    className="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-110"
                     src={user?.profileImage}
                     alt="profile"
                   />
