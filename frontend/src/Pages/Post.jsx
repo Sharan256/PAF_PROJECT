@@ -258,20 +258,7 @@ const Post = () => {
           userProfile: user.profileImage,
         };
 
-        if (editPost) {
-          try {
-            const res = await axios.put(
-              `http://localhost:8080/posts`,
-              updateData
-            );
-            console.log(res);
-            setIsUploadSuccess(true);
-            navigate("/");
-            toast.success("Post updated successfully");
-          } catch (error) {
-            console.log(error);
-          }
-        } else {
+         else {
           try {
             const res = await axios.post(
               "http://localhost:8080/posts",
