@@ -7,6 +7,9 @@ const ActiveUsersList = ({ loggedInUser }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Function to fetch users from backend  API
+
+    // Set interval to re-fetch users every 30 seconds (polling)
     const fetchUsers = async () => {
       try {
         const res = await axios.get("http://localhost:8080/users");
@@ -15,11 +18,12 @@ const ActiveUsersList = ({ loggedInUser }) => {
         console.error('Error fetching users:', error);a
       }
     };
-    fetchUsers();
+    fetchUsers();// Initial fetch on component mount
 
     // Poll for active users every 30 seconds
     const interval = setInterval(fetchUsers, 30000);
     return () => clearInterval(interval);
+    // Cleanup interval on component unmount
   }, []);
 
   return (

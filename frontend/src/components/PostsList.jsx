@@ -30,6 +30,7 @@ const PostsList = ({
   const [shareDescription, setShareDescription] = useState("");
 
   const navigate = useNavigate();
+  // Handle like/unlike button click
   const likeBtnClick = async (post) => {
     try {
       const res = await axios.post(
