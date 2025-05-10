@@ -9,7 +9,13 @@ import { AiFillEdit } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { app } from "../db/firebase";
+import { FaImage, FaPaperPlane } from "react-icons/fa6";
+
+const API_URL = "http://localhost:8080";
+const storage = getStorage(app);
 
 const PostsList = ({
   post,
@@ -22,13 +28,30 @@ const PostsList = ({
   reFetchSharedPost,
 }) => {
   const [showModal, setShowModal] = useState(false);
-  const [comment, setComment] = useState(null);
+  const [comment, setComment] = useState("");
   const [editComment, setEditComment] = useState(false);
   const [commentId, setCommentId] = useState(null);
   const [shareModal, setShareModal] = useState(false);
   const [shareDescription, setShareDescription] = useState("");
+  const [commentMedia, setCommentMedia] = useState(null);
+  const [commentMediaPreview, setCommentMediaPreview] = useState(null);
+  const [error, setError] = useState("");
+  const [comments, setComments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (post?.comments) {
+      console.log('Post comments:', post.comments); // Debug log for comments
+      setComments(post.comments);
+    }
+  }, [post?.comments]);
+
+  const handleProfileClick = (userId) => {
+    navigate(`/profile/${userId}`);
+  };
+
   const likeBtnClick = async (post) => {
     try {
       const res = await axios.post(
@@ -55,63 +78,162 @@ const PostsList = ({
     }
   };
 
-  const commentAdd = async (e) => {
-    e.preventDefault();
-    if (!comment) return toast.error("Comment is required");
+  const handleCommentMediaChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    if (editComment) {
-      try {
-        await axios.put(
-          `http://localhost:8080/posts/${post.id}/comments/${commentId}`,
-          {
-            content: comment,
-          }
-        );
-        setComment("");
-        setCommentId(null);
-        setEditComment(false);
-        setReFetchPost(!reFetchPost);
-        toast.success("Comment updated successfully");
-      } catch (error) {
-        console.log(error);
-      }
+    // Check file size (20MB limit)
+    if (file.size > 20 * 1024 * 1024) {
+      setError("File size must be less than 20MB");
+      return;
+    }
+
+    // Check if it's a video
+    if (file.type.startsWith('video/')) {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        if (video.duration > 30) {
+          setError("Video duration must be less than 30 seconds");
+          return;
+        }
+        setCommentMedia(file);
+        setCommentMediaPreview(URL.createObjectURL(file));
+      };
+      video.src = URL.createObjectURL(file);
     } else {
-      try {
-        const res = await axios.post(
-          `http://localhost:8080/posts/${post.id}/comments`,
-          {
+      setCommentMedia(file);
+      setCommentMediaPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleEditComment = (comment) => {
+    console.log('Editing comment:', comment);
+    setComment(comment.content);
+    setCommentMediaPreview(comment.media);
+    setEditComment(true);
+    setCommentId(comment.id);
+  };
+
+  const commentAdd = async (postId) => {
+    try {
+      console.log('Adding/Editing comment for post:', postId);
+      console.log('Edit mode:', editComment, 'Comment ID:', commentId); // Debug log
+      setIsLoading(true);
+      setError("");
+
+      if (!comment && !commentMedia) {
+        setError("Please add a comment or media");
+        return;
+      }
+
+      let mediaUrl = null;
+      if (commentMedia) {
+        try {
+          const storageRef = ref(storage, `comments/${Date.now()}_${commentMedia.name}`);
+          const uploadResult = await uploadBytes(storageRef, commentMedia);
+          mediaUrl = await getDownloadURL(uploadResult.ref);
+        } catch (uploadError) {
+          console.error('Error uploading media:', uploadError);
+          setError('Failed to upload media');
+          return;
+        }
+      }
+
+      if (editComment && commentId) {
+        // Update existing comment
+        console.log('Updating comment:', commentId);
+        const response = await axios.put(`${API_URL}/api/comments/${commentId}`, null, {
+          params: {
+            content: comment,
+            media: mediaUrl || commentMediaPreview
+          }
+        });
+
+        if (response.data) {
+          setComments(prev => prev.map(c => 
+            c.id === commentId ? { ...c, content: comment, media: mediaUrl || commentMediaPreview } : c
+          ));
+          toast.success("Comment updated successfully");
+          // Reset edit mode
+          setEditComment(false);
+          setCommentId(null);
+        }
+      } else {
+        // Add new comment
+        console.log('Adding new comment');
+        const response = await axios.post(`${API_URL}/api/comments/post/${postId}`, null, {
+          params: {
+            content: comment,
             commentBy: user.name,
             commentById: user.id,
             commentByProfile: user.profileImage,
-            content: comment,
+            media: mediaUrl
           }
-        );
-        if (res.data) {
-          setComment("");
-          setReFetchPost(!reFetchPost);
+        });
+
+        if (response.data) {
+          const newComment = {
+            ...response.data,
+            createdAt: new Date().toISOString()
+          };
+          setComments(prev => [...prev, newComment]);
           toast.success("Comment added successfully");
         }
-      } catch (error) {
-        console.log(error);
       }
-    }
-  };
 
-  const deleteComment = async (comment) => {
-    try {
-      await axios.delete(
-        `http://localhost:8080/posts/${post.id}/comments/${comment.id}`
-      );
-      toast.success("Comment deleted successfully");
+      // Reset form
+      setComment("");
+      setCommentMedia(null);
+      setCommentMediaPreview(null);
+      setError("");
       setReFetchPost(!reFetchPost);
     } catch (error) {
-      console.log(error);
+      console.error('Error with comment:', error);
+      setError(error.response?.data?.message || 'Failed to process comment');
+      toast.error(error.response?.data?.message || 'Failed to process comment');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleEditComment = (comment, postId) => {
-    setComment(comment.content);
-    setEditComment(true);
+  const deleteComment = async (commentId) => {
+    // Store the comment before deleting for potential rollback
+    const commentToDelete = comments.find(c => c.id === commentId);
+    if (!commentToDelete) {
+      toast.error("Comment not found");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      console.log('Deleting comment:', commentId);
+      
+      // First update the UI optimistically
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      if (post.comments) {
+        post.comments = post.comments.filter(c => c.id !== commentId);
+      }
+      
+      // Then make the API call
+      await axios.delete(`${API_URL}/api/comments/${post.id}/${commentId}`);
+      
+      // If we get here, the deletion was successful
+      toast.success("Comment deleted successfully");
+      // Force a re-render of the post
+      setReFetchPost(prev => !prev);
+      
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      // Revert the UI changes on error
+      setComments(prev => [...prev, commentToDelete]);
+      if (post.comments) {
+        post.comments = [...post.comments, commentToDelete];
+      }
+      toast.error('Failed to delete comment');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleShare = async (e) => {
@@ -132,235 +254,312 @@ const PostsList = ({
     }
   };
 
+
   return (
-    <div>
-      <div className="h-full w-full bg-gray-50 flex items-center justify-center">
-        <div className="border max-w-screen-md bg-white mt-6 rounded-2xl p-4">
-          <div className="flex items-center	justify-between">
-            <div className="gap-3.5	flex items-center ">
+    <div className="w-full">
+      <div className="w-full flex items-center justify-center">
+        <div className="w-full max-w-4xl bg-white mt-6 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <div 
+              className="gap-4 flex items-center cursor-pointer group"
+              onClick={() => handleProfileClick(post.userId)}
+            >
               <img
                 src={post?.userProfile}
                 alt=""
-                className="object-cover bg-yellow-500 rounded-full w-10 h-10"
+                className="object-cover bg-yellow-500 rounded-full w-12 h-12 ring-2 ring-gray-100 group-hover:ring-yellow-200 transition-all duration-200"
               />
               <div className="flex flex-col">
-                <b className="mb-2 capitalize">{post?.username}</b>
+                <b className="mb-2 capitalize text-gray-800 group-hover:text-yellow-600 transition-colors duration-200">{post?.username}</b>
                 <time datetime="06-08-21" className="text-gray-400 text-xs">
                   <TimeAgo date={post?.date} />
                 </time>
               </div>
             </div>
-            <div className="bg-gray-100	rounded-full h-3.5 flex	items-center justify-center gap-3">
+            <div className="bg-gray-50 rounded-full p-2 flex items-center justify-center gap-3 hover:bg-gray-100 transition-colors duration-200">
               {user?.id === post?.userId && (
                 <>
                   <AiFillDelete
                     size={20}
                     color="red"
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:scale-110 transition-transform duration-200"
                     onClick={() => deletePost(post)}
                   />
                   <AiFillEdit
                     size={20}
                     color="blue"
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:scale-110 transition-transform duration-200"
                     onClick={navigateEditPage}
                   />
                 </>
               )}
             </div>
           </div>
-          <div className="whitespace-pre-wrap mt-7 font-bold ">
+          <div className="whitespace-pre-wrap mt-7 font-bold text-xl text-gray-800 mb-3">
             {post?.title}
           </div>
-          <p className="mt-1 text-sm text-gray-700">{post?.description}</p>
-          <div className="mt-5 flex gap-2	 justify-center border-b pb-4 flex-wrap	w-[600px] max-w-[700px]">
+          <p className="mt-1 text-sm text-gray-600 leading-relaxed">{post?.description}</p>
+          <div className="mt-6 flex gap-4 justify-center border-b border-gray-100 pb-6">
             {post?.images?.length === 3 ? (
-              <>
+              <div className="grid grid-cols-3 gap-4 w-full">
                 <img
-                  src={post.images[0]}
+                  src={post?.images[0]}
                   alt=""
-                  className="bg-red-500 rounded-2xl w-1/3 object-cover h-96 flex-auto"
+                  className="rounded-2xl w-full aspect-square object-cover hover:opacity-90 transition-opacity duration-200"
                 />
                 <img
-                  src={post.images[1]}
+                  src={post?.images[1]}
                   alt=""
-                  className="bg-red-500 rounded-2xl w-1/3 object-cover h-96 flex-auto"
+                  className="rounded-2xl w-full aspect-square object-cover hover:opacity-90 transition-opacity duration-200"
                 />
                 <img
-                  src={post.images[2]}
+                  src={post?.images[2]}
                   alt=""
-                  className="bg-red-500 rounded-2xl w-1/3 object-cover h-96 flex-auto"
+                  className="rounded-2xl w-full aspect-square object-cover hover:opacity-90 transition-opacity duration-200"
                 />
-              </>
+              </div>
             ) : post?.images?.length === 2 ? (
-              <>
+              <div className="grid grid-cols-2 gap-4 w-full">
                 <img
-                  src={post.images[0]}
+                  src={post?.images[0]}
                   alt=""
-                  className="bg-red-500 rounded-2xl w-1/3 object-cover h-96 flex-auto"
+                  className="rounded-2xl w-full aspect-square object-cover hover:opacity-90 transition-opacity duration-200"
                 />
                 <img
-                  src={post.images[1]}
+                  src={post?.images[1]}
                   alt=""
-                  className="bg-red-500 rounded-2xl w-1/3 object-cover h-96 flex-auto"
+                  className="rounded-2xl w-full aspect-square object-cover hover:opacity-90 transition-opacity duration-200"
                 />
-              </>
+              </div>
             ) : post?.images?.length === 1 ? (
-              <img
-                src={post.images[0]}
-                alt=""
-                className="bg-red-500 rounded-2xl w-1/3 object-cover h-96 flex-auto"
-              />
-            ) : (
-              <>
+              <div className="w-full">
+                <img
+                  src={post?.images[0]}
+                  alt=""
+                  className="rounded-2xl w-full max-h-[600px] object-contain hover:opacity-90 transition-opacity duration-200"
+                />
+              </div>
+            ) : post?.video ? (
+              <div className="w-full">
                 <video
                   controls
-                  className="mt-3"
-                  style={{ maxWidth: "570px", height: "auto" }}
+                  className="rounded-2xl w-full max-h-[600px] object-contain hover:opacity-90 transition-opacity duration-200"
                 >
                   <source src={post?.video} type="video/mp4" />
-                  Your browser does not support this video. Please update your browser or try using a different one.
+                  Your browser does not support the video tag.
                 </video>
-              </>
-            )}
+              </div>
+            ) : null}
           </div>
-          <div className=" h-16 border-b  flex items-center justify-around	">
-            <div className="flex items-center	gap-3	cursor-pointer">
+          <div className="h-16 border-b border-gray-100 flex items-center justify-around">
+            <div className="flex items-center gap-3 cursor-pointer hover:text-red-500 transition-colors duration-200">
               {post?.likedBy?.includes(user?.id) ? (
-                <>
-                  <FaHeart
-                    size={24}
-                    color="red"
-                    onClick={() => likeBtnClick(post)}
-                  />
-                </>
+                <FaHeart size={24} color="red" onClick={() => likeBtnClick(post)} />
               ) : (
-                <>
-                  <CiHeart
-                    size={24}
-                    color="red"
-                    onClick={() => likeBtnClick(post)}
-                  />
-                </>
+                <CiHeart size={24} color="red" onClick={() => likeBtnClick(post)} />
               )}
-              <p> {post?.likeCount} Like</p>
+              <p className="text-gray-600">{post?.likeCount} Like</p>
             </div>
             <div
-              className="flex items-center	gap-3 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer hover:text-blue-500 transition-colors duration-200"
               onClick={() => setShowModal(true)}
             >
               <MdOutlineInsertComment size={24} color="blue" />
-              <p className="text-blue-900 ">{post?.comments?.length} Comment</p>
+              <p className="text-gray-600">{post?.comments?.length} Comment</p>
             </div>
-
             <div
-              className="flex items-center	gap-3 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer hover:text-green-500 transition-colors duration-200"
               onClick={() => setShareModal(true)}
             >
               <FaShareFromSquare size={22} />
-              <p> Share</p>
+              <p className="text-gray-600">Share</p>
             </div>
           </div>
         </div>
       </div>
-      {showModal ? (
-        <>
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-            <div className="relative w-auto my-6 mx-auto max-w-3xl">
-              <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[550px] h-[600px] px-10 justify-between py-10">
-                <div className="text-center font-bold text-xl flex justify-between ">
-                  <h1 className="text-blue-800">Comments</h1>
-                  <IoClose
-                    color="red"
-                    size={28}
-                    className="cursor-pointer"
-                    onClick={() => setShowModal(false)}
+
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-2xl ring-1 ring-gray-200">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Comments</h2>
+              <button 
+                onClick={() => setShowModal(false)} 
+                className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+              >
+                <IoClose size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <div key={comment._id} className="flex space-x-2">
+                  <img
+                    src={comment.commentByProfile}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full cursor-pointer ring-2 ring-gray-100 hover:ring-yellow-200 transition-all duration-200"
+                    onClick={() => navigate(`/profile/${comment.commentById}`)}
                   />
-                </div>
-                <div className=" h-[400px] overflow-y-scroll ">
-                  <div className="flex flex-col gap-8 justify-center">
-                    {post.comments?.length > 0 ? (
-                      post?.comments?.map((comment) => (
-                        <div className="flex items-center  justify-between">
-                          <div className="flex gap-5">
-                            <div className="flex justify-center items-center">
-                              <img
-                                src={comment?.commentByProfile}
-                                alt=""
-                                className="object-cover bg-yellow-500 rounded-full w-14 h-14"
-                              />
-                            </div>
-                            <div className="flex flex-col">
-                              <b className="capitalize">{comment?.commentBy}</b>
-                              <time
-                                datetime="06-08-21"
-                                className="text-gray-400 text-xs"
-                              >
-                                <TimeAgo date={comment?.createdAt} />
-                              </time>
-                              <p className="mt-1 text-base">
-                                {comment?.content}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex flex-col gap-5 px-5">
-                            {user?.id === comment?.commentById && (
-                              <>
-                                <AiFillDelete
-                                  onClick={() => deleteComment(comment)}
-                                  size={20}
-                                  color="red"
-                                  className="cursor-pointer"
-                                />
-                                <AiFillEdit
-                                  onClick={() => {
-                                    handleEditComment(comment, post.id);
-                                    setCommentId(comment.id);
-                                  }}
-                                  size={20}
-                                  color="blue"
-                                  className="cursor-pointer"
-                                />
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center text-2xl text-gray-400">
-                        No comments yet
+                  <div className="flex-1">
+                    <div className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors duration-200 shadow-sm">
+                      <div className="flex items-center space-x-2">
+                        <span
+                          className="font-semibold cursor-pointer hover:text-yellow-600 transition-colors duration-200"
+                          onClick={() => navigate(`/profile/${comment.commentById}`)}
+                        >
+                          {comment.commentBy}
+                        </span>
+                        <span className="text-gray-500 text-sm">
+                          <TimeAgo date={comment.createdAt} />
+                        </span>
                       </div>
-                    )}
+                      <p className="mt-1 text-gray-700">{comment.content}</p>
+                      {comment.media && (
+                        <div className="mt-2">
+                          {comment.media.startsWith('data:video') || comment.media.endsWith('.mp4') ? (
+                            <video
+                              src={comment.media}
+                              controls
+                              className="max-h-40 rounded-lg"
+                            />
+                          ) : (
+                            <img
+                              src={comment.media}
+                              alt="Comment media"
+                              className="max-h-40 rounded-lg"
+                            />
+                          )}
+                        </div>
+                      )}
+                      {user.id === comment.commentById && (
+                        <div className="flex space-x-2 mt-2">
+                          <button
+                            onClick={() => handleEditComment(comment)}
+                            className="text-blue-500 hover:text-blue-600 transition-colors duration-200"
+                          >
+                            <AiFillEdit size={20} />
+                          </button>
+                          <button
+                            onClick={() => {
+                              console.log('Full comment object:', comment);
+                              const commentId = comment.id || comment._id;
+                              if (commentId) {
+                                deleteComment(commentId);
+                              } else {
+                                console.error('Comment object missing ID:', comment);
+                                toast.error('Comment ID not found');
+                              }
+                            }}
+                            className="text-red-500 hover:text-red-600 transition-colors duration-200"
+                          >
+                            <AiFillDelete size={20} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <form onSubmit={commentAdd} className="flex">
-                  <input
-                    type="text"
-                    className="px-2 w-full h-10 border"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Add a comment"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-500 text-white w-20 h-10"
-                  >
-                    {<>{editComment ? "Update" : "Add"} </>}
-                  </button>
-                </form>
+              ))}
+            </div>
+
+            <div className="mt-4">
+              <div className="flex items-start space-x-2">
+                <img
+                  src={user.profileImage}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full cursor-pointer ring-2 ring-gray-100 hover:ring-yellow-200 transition-all duration-200"
+                  onClick={() => navigate(`/profile/${user.id}`)}
+                />
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder={editComment ? "Edit your comment..." : "Write a comment..."}
+                      className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all duration-200"
+                      disabled={isLoading}
+                    />
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      onChange={handleCommentMediaChange}
+                      className="hidden"
+                      id={`comment-media-${post.id}`}
+                      disabled={isLoading}
+                    />
+                    <label
+                      htmlFor={`comment-media-${post.id}`}
+                      className={`p-2 ${isLoading ? 'text-gray-400' : 'text-gray-500 hover:text-yellow-500'} cursor-pointer transition-colors duration-200`}
+                    >
+                      <FaImage />
+                    </label>
+                    <button
+                      onClick={() => commentAdd(post.id)}
+                      disabled={(!comment && !commentMedia) || isLoading}
+                      className={`p-2 ${(!comment && !commentMedia) || isLoading ? 'text-gray-400' : 'text-yellow-500 hover:text-yellow-600'} transition-colors duration-200`}
+                    >
+                      <FaPaperPlane />
+                    </button>
+                    {editComment && (
+                      <button
+                        onClick={() => {
+                          setComment("");
+                          setCommentMedia(null);
+                          setCommentMediaPreview(null);
+                          setEditComment(false);
+                          setCommentId(null);
+                        }}
+                        className="p-2 text-red-500 hover:text-red-600 transition-colors duration-200"
+                      >
+                        <IoClose />
+                      </button>
+                    )}
+                  </div>
+                  {commentMediaPreview && (
+                    <div className="mt-2 relative">
+                      {commentMediaPreview.startsWith('data:video') ? (
+                        <video
+                          src={commentMediaPreview}
+                          controls
+                          className="max-h-40 rounded-lg"
+                        />
+                      ) : (
+                        <img
+                          src={commentMediaPreview}
+                          alt="Preview"
+                          className="max-h-40 rounded-lg"
+                        />
+                      )}
+                      <button
+                        onClick={() => {
+                          setCommentMedia(null);
+                          setCommentMediaPreview(null);
+                        }}
+                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200"
+                      >
+                        <IoClose />
+                      </button>
+                    </div>
+                  )}
+                  {error && (
+                    <div className="text-red-500 text-sm mt-2">
+                      {error}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-        </>
-      ) : null}
+        </div>
+      )}
 
       {shareModal ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[550px] h-[300px] px-10 justify-between py-10">
-                <div className="text-center font-bold text-xl flex justify-between ">
+                <div className="text-center font-bold text-xl flex justify-between">
                   <h1 className="text-blue-800">Share</h1>
                   <IoClose
                     color="red"
@@ -390,4 +589,6 @@ const PostsList = ({
     </div>
   );
 };
+
 export default PostsList;
+

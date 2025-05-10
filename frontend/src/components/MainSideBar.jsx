@@ -1,94 +1,172 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { FaHome, FaPlus, FaClipboardList, FaUtensils, FaSignOutAlt, FaUsers } from "react-icons/fa";
+import { useActiveTab } from "../context/ActiveTabContext";
+import axios from "axios";
 
-const MainSideBar = ({ user, isOpen }) => {
+const MainSidebar = ({ user, toggleSideBar2 }) => {
+  const { activeTab, setActiveTab } = useActiveTab();
+
   const handleLogout = async () => {
     try {
-      window.location.href = "http://localhost:8080/logout";
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user?.id) {
+        await axios.post(`http://localhost:8080/users/${user.id}/deactivate`);
+      }
       localStorage.removeItem("user");
+      window.location.href = "/login";
     } catch (error) {
-      console.error("Logout failed", error);
+      console.log(error);
+      // Still proceed with logout even if deactivation fails
+      localStorage.removeItem("user");
+      window.location.href = "/login";
     }
   };
 
-  const navItems = [
-    { path: "/", icon: <FaHome className="w-5 h-5" />, label: "Home" },
-    { path: "/post", icon: <FaPlus className="w-5 h-5" />, label: "Create Post" },
-    { path: "/CreateWorkoutStatus", icon: <FaClipboardList className="w-5 h-5" />, label: "Workout Status" },
-    { path: "/CreateWorkoutPlan", icon: <FaClipboardList className="w-5 h-5" />, label: "Workout Plan" },
-    { path: "/CreateMealPlan", icon: <FaUtensils className="w-5 h-5" />, label: "Meal Plan" },
-    { path: "/active-users", icon: <FaUsers className="w-5 h-5" />, label: "Active Users" },
+  const tabs = [
+    { id: "tab1", label: "Workout Status", path: "/" },
+    { id: "tab2", label: "Workout Plan", path: "/workout-plan" },
+    { id: "tab3", label: "Create Status", path: "/create-status" },
+    { id: "tab4", label: "Meal Plan", path: "/meal-plan" },
+    { id: "tab5", label: "Create Meal Plan", path: "/create-meal-plan" },
   ];
 
   return (
-    <div 
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-gradient-to-b from-purple-50 to-white shadow-lg transform transition-transform duration-300 ease-in-out z-30
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
-    >
+    <aside className="fixed top-[70px] left-0 h-[calc(100vh-70px)] w-[250px] bg-gradient-to-b from-gray-100 via-gray-60 to-gray-300 border-r border-r-gray-200">
       <div className="flex flex-col h-full">
-        {/* Profile Section */}
-        <div className="p-6">
+        <div className="flex items-center justify-evenly px-8 py-5 bg-gradient-to-r from-blue-200 to-indigo-70 rounded-xl m-4 shadow-sm">
           <Link
             to={`/profile/${user?.id}`}
-            className="flex items-center space-x-4 group"
+            className="flex items-center w-full"
           >
-            <div className="relative">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 p-[2px]">
-                <div className="w-full h-full rounded-full border-2 border-white">
-                  <img
-                    className="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    src={user?.profileImage}
-                    alt="profile"
-                  />
-                </div>
+            <div className="mr-4">
+              <div className="">
+                <img
+                  className="w-[50px] h-[50px] min-w-[50px] rounded-full border-2 border-blue-400 shadow-sm"
+                  src={user?.profileImage}
+                  alt="profile"
+                />
               </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-md"></div>
             </div>
-            <div>
-              <p className="text-lg font-semibold text-gray-800 group-hover:text-purple-600 transition-colors">
-                {user?.name}
-              </p>
-              <p className="text-sm text-gray-500">{user?.email}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-bold text-gray-800 truncate">{user?.name}</p>
+              <p className="text-xs text-gray-600 truncate">{user?.email}</p>
             </div>
           </Link>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-2 overflow-y-auto">
-          <div className="space-y-2">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) => 
-                  `flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
-                    isActive
-                      ? "bg-purple-600 text-white shadow-lg"
-                      : "text-gray-600 hover:bg-purple-50 hover:text-purple-600"
-                  }`
-                }
-              >
-                {item.icon}
-                <span className="font-medium">{item.label}</span>
-              </NavLink>
-            ))}
-          </div>
-        </nav>
+        <div className="relative pl-3 my-5">
+          <div className="flex flex-col w-full font-medium">
+            <div>
+              <span className="select-none flex items-center px-4 py-[.375rem] cursor-pointer my-[.0.5rem] rounded-xl">
+                <NavLink
+                  to="/"
+                  className={({ isActive, isPending }) =>
+                    isPending
+                      ? "pending"
+                      : isActive
+                      ? "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md"
+                      : "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-600 transition-all"
+                  }
+                >
+                  Home
+                </NavLink>
+              </span>
+            </div>
 
-        {/* Logout Button */}
-        <div className="p-4 border-t border-gray-200">
-          <button
-            onClick={handleLogout}
-            className="flex items-center space-x-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-          >
-            <FaSignOutAlt className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
-          </button>
+            <div>
+              <span className="select-none flex items-center px-4 py-[.375rem] cursor-pointer my-[.0.5rem] rounded-xl">
+                <NavLink
+                  to="/post"
+                  className={({ isActive, isPending }) =>
+                    isPending
+                      ? "pending"
+                      : isActive
+                      ? "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md"
+                      : "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-600 transition-all"
+                  }
+                >
+                  Post
+                </NavLink>
+              </span>
+            </div>
+
+            <div>
+              <span className="select-none flex items-center px-4 py-[.375rem] cursor-pointer my-[.0.5rem] rounded-xl">
+                <NavLink
+                  to="/CreateWorkoutStatus"
+                  className={({ isActive, isPending }) =>
+                    isPending
+                      ? "pending"
+                      : isActive
+                      ? "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md"
+                      : "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-600 transition-all"
+                  }
+                >
+                  Workout Status
+                </NavLink>
+              </span>
+            </div>
+
+            <div>
+              <span className="select-none flex items-center px-4 py-[.375rem] cursor-pointer my-[.0.5rem] rounded-xl">
+                <NavLink
+                  to="/CreateWorkoutPlan"
+                  className={({ isActive, isPending }) =>
+                    isPending
+                      ? "pending"
+                      : isActive
+                      ? "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md"
+                      : "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-600 transition-all"
+                  }
+                >
+                  Workout Plan
+                </NavLink>
+              </span>
+            </div>
+
+            <div>
+              <span className="select-none flex items-center px-4 py-[.375rem] cursor-pointer my-[.0.5rem] rounded-xl">
+                <NavLink
+                  to="/CreateMealPlan"
+                  className={({ isActive, isPending }) =>
+                    isPending
+                      ? "pending"
+                      : isActive
+                      ? "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md"
+                      : "flex items-center rounded-xl w-full px-4 py-3 h-12 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-600 transition-all"
+                  }
+                >
+                  Meal Plan
+                </NavLink>
+              </span>
+            </div>
+
+            <div className="my-5">
+              <span className="select-none flex items-center px-4 py-[.175rem] cursor-pointer my-[.1rem] rounded-xl">
+                <button
+                  className="flex items-center rounded-xl w-full px-4 py-2 h-10 bg-gradient-to-r from-green-500 to-green-600 text-white shadow-sm hover:shadow-md transition-all"
+                  onClick={toggleSideBar2}
+                >
+                  Active Users
+                </button>
+              </span>
+            </div>
+
+            <div className="my-5">
+              <span className="select-none flex items-center px-4 py-[.175rem] cursor-pointer my-[.1rem] rounded-xl">
+                <button
+                  className="flex items-center rounded-xl w-full px-4 py-2 h-10 bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm hover:shadow-md transition-all"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 
-export default MainSideBar;
+export default MainSidebar;

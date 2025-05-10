@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import { TEInput, TETextarea } from "tw-elements-react";
+import { TEInput } from "tw-elements-react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../db/firebase";
 import * as yup from "yup";
@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import toast from "react-hot-toast";
-import backgroundImg from "../images/PostBac.jpg";
+// import backgroundImg from "../images/PostBac.jpg";
 
 const storage = getStorage(app);
 
@@ -311,163 +311,180 @@ const Post = () => {
 
   return (
     <Layout>
-      <div
-      className="container mx-auto p-4 min-h-screen"
-      style={{
-        backgroundImage: `url(${backgroundImg})`,
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundAttachment: "fit",
-      }}
-    >
-      
-        <h1 className="text-3xl text-white font-bold mb-6 text-center">
-          {editPost ? "Edit Post" : "Add Post"}
-        </h1>
+      <div className="min-h-screen p-4 bg-gradient-to-br from-blue-100 via-indigo-50 to-purple-100">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-800 mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+              {editPost ? "Edit Post" : "Create Post"}
+            </h1>
+            <p className="text-gray-600 text-lg">Share your fitness journey with others</p>
+          </div>
 
-        <div           className="max-w-xl mx-auto p-6 rounded-lg shadow-md bg-transparent"
-          style={{ backgroundColor: "rgba(255, 255, 255, 0.75)" }}>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="w-full max-w-lg space-y-6 -z-0"
-            
-          >
-            <div className="w-full">
-              <TEInput
-                type="text"
-                label="Topic"
-                {...register("title")}
-                isInvalid={errors.title}
-                className="mb-1"
-              ></TEInput>
-              {errors.title && (
-                <p className="text-xs mt-1 mb-1 text-red-500">
-                  {errors.title.message}
-                </p>
-              )}
-            </div>
-            <div className="w-full">
-              <textarea
-                id="textareaExample"
-                label="Description"
-                rows={4}
-                placeholder="Write your thoughts here..."
-                className="mb-1 resize-none w-full border border-gray-400 focus:outline-blue-700 rounded-lg p-5"
-                {...register("description")}
-                isInvalid={errors.description}
-              />
-              {errors.description && (
-                <p className="text-xs mt-1 mb-1 text-red-500">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
-            {!editPost && (
-              <select
-                onChange={(e) => {
-                  if (e.target.value === 1) {
-                    setImageSelected(true);
-                    setVideoSelected(false);
-                  } else {
-                    setImageSelected(false);
-                    setVideoSelected(true);
-                  }
-                }}
-                className="w-full p-2 mt-4 mb-4 border border-gray-300 rounded-md"
-                defaultValue={1}
-                onClick={(e) => console.log(e.target.value)}
-              >
-                <option value={1}>Image Upload</option>
-                <option value={2}>Video Upload</option>
-              </select>
-            )}
-
-            <div>
-              {imageSelected ? (
-                <>
-                  <label
-                    htmlFor="formFileMultiple"
-                    className="mb-2 inline-block text-neutral-700 dark:text-neutral-200"
-                  >
-                    Images Upload
+          <div className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              <div className="space-y-6">
+                <div className="transform hover:scale-[1.01] transition-transform duration-200">
+                  <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Topic
                   </label>
                   <input
-                    className="relative m-0 block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary"
-                    type="file"
-                    accept="image/*"
-                    id="formFileMultiple"
-                    multiple
-                    onChange={onImageChange}
+                    type="text"
+                    id="title"
+                    {...register("title")}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70 shadow-sm hover:shadow-md"
+                    placeholder="Enter your post topic"
                   />
-                  {errors.images && (
-                    <p className="text-xs mt-1 mb-1 text-red-500">
-                      {errors.images.message}
-                    </p>
+                  {errors.title && (
+                    <p className="text-xs mt-1 text-red-500 font-medium">{errors.title.message}</p>
                   )}
-                  <div className="flex gap-2 ">
-                    {imageURLs.map((imageSrc, index) => (
-                      <img
-                        key={index}
-                        className="mt-3 flex items-center justify-center w-[100px] h-[100px] bg-gray-200 rounded-lg"
-                        src={imageSrc}
-                        alt="not found"
-                        width={"250px"}
-                      />
-                    ))}
+                </div>
+
+                <div className="transform hover:scale-[1.01] transition-transform duration-200">
+                  <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    rows={4}
+                    {...register("description")}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[120px] resize-none bg-white/70 shadow-sm hover:shadow-md"
+                    placeholder="Write your thoughts here..."
+                  />
+                  {errors.description && (
+                    <p className="text-xs mt-1 text-red-500 font-medium">{errors.description.message}</p>
+                  )}
+                </div>
+
+                {!editPost && (
+                  <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                    <label htmlFor="contentType" className="block text-sm font-semibold text-gray-700 mb-2">
+                      Content Type
+                    </label>
+                    <select
+                      id="contentType"
+                      onChange={(e) => {
+                        if (e.target.value === "1") {
+                          setImageSelected(true);
+                          setVideoSelected(false);
+                        } else {
+                          setImageSelected(false);
+                          setVideoSelected(true);
+                        }
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70 shadow-sm hover:shadow-md"
+                      defaultValue="1"
+                    >
+                      <option value="1">Image Upload</option>
+                      <option value="2">Video Upload</option>
+                    </select>
                   </div>
-                </>
-              ) : (
-                <>
-                  <label
-                    htmlFor="formFileMultiple"
-                    className="mb-2 inline-block text-neutral-700 dark:text-neutral-200"
-                  >
-                    Video Upload
-                  </label>
-                  <input
-                    className="relative m-0 block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary"
-                    type="file"
-                    id="formFileMultiple"
-                    onChange={onVideoChange}
-                    onClick={() => {
-                      setVideo(null);
-                      setVideoURL(null);
-                    }}
-                    accept="video/mp4,video/x-m4v,video/*"
-                  />
-                  {errors.video && (
-                    <p className="text-xs mt-1 mb-1 text-red-500">
-                      {errors.video.message}
-                    </p>
-                  )}
-                  <div className="">
-                    {videoURL && (
-                      <div className="flex justify-center items-center">
-                        <video
-                          controls
-                          className="mt-3"
-                          style={{ maxWidth: "400px", height: "auto" }}
-                        >
-                          <source src={videoURL} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
+                )}
+
+                <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                  {imageSelected ? (
+                    <>
+                      <label htmlFor="formFileMultiple" className="block text-sm font-semibold text-gray-700 mb-2">
+                        Images Upload
+                      </label>
+                      <div className="relative">
+                        <input
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70 shadow-sm hover:shadow-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-blue-50 file:to-indigo-50 file:text-blue-700 hover:file:from-blue-100 hover:file:to-indigo-100"
+                          type="file"
+                          accept="image/*"
+                          id="formFileMultiple"
+                          multiple
+                          onChange={onImageChange}
+                        />
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                          </svg>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
+                      {errors.images && (
+                        <p className="text-xs mt-1 text-red-500 font-medium">{errors.images.message}</p>
+                      )}
+                      <div className="grid grid-cols-3 gap-4 mt-4">
+                        {imageURLs.map((imageSrc, index) => (
+                          <div key={index} className="relative aspect-square group">
+                            <img
+                              className="w-full h-full object-cover rounded-xl shadow-md group-hover:shadow-lg transition-all duration-200"
+                              src={imageSrc}
+                              alt={`Preview ${index + 1}`}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-xl"></div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <label htmlFor="formFileMultiple" className="block text-sm font-semibold text-gray-700 mb-2">
+                        Video Upload
+                      </label>
+                      <div className="relative">
+                        <input
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70 shadow-sm hover:shadow-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-blue-50 file:to-indigo-50 file:text-blue-700 hover:file:from-blue-100 hover:file:to-indigo-100"
+                          type="file"
+                          id="formFileMultiple"
+                          onChange={onVideoChange}
+                          onClick={() => {
+                            setVideo(null);
+                            setVideoURL(null);
+                          }}
+                          accept="video/mp4,video/x-m4v,video/*"
+                        />
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
+                      {errors.video && (
+                        <p className="text-xs mt-1 text-red-500 font-medium">{errors.video.message}</p>
+                      )}
+                      {videoURL && (
+                        <div className="mt-4 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-200">
+                          <video
+                            controls
+                            className="w-full"
+                          >
+                            <source src={videoURL} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
 
-            <button
-              type="submit"
-              className="flex w-full rounded  items-center justify-center  bg-success px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-success-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] "
-            >
-              {isSubmitting ? "uploading....." : "post"}
-            </button>
-          </form>
+              <div className="flex justify-end space-x-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => navigate("/")}
+                  className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200 bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Uploading...
+                    </span>
+                  ) : editPost ? "Update Post" : "Create Post"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-
       </div>
     </Layout>
   );

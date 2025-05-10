@@ -21,14 +21,13 @@ const CreateWorkoutPlan = () => {
   const [selectedWorkout, setSelectedWorkout] = useState("Chest");
   const [exercises, setExercises] = useState("");
   const [sets, setSets] = useState("");
-  const [routine, setRoutine] = useState("");
   const [repetitions, setRepetitions] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [user, setUser] = useState({});
   const [editWorkoutPlans, setEditWorkoutPlans] = useState(false);
   const { setActiveTab } = useActiveTab();
-console.log(selectedWorkout)
+
   const { workoutPlanId } = useParams();
 
   useEffect(() => {
@@ -40,17 +39,17 @@ console.log(selectedWorkout)
         setSelectedWorkout(data.workoutPlanName);
         setExercises(data.exercises);
         setSets(data.sets);
-        setRoutine(data.routine);
         setRepetitions(data.repetitions);
         setDescription(data.description);
         setDate(data.date);
-        console.log(data);
         setEditWorkoutPlans(true);
       } catch (error) {
         console.log(error);
       }
     };
+    if (workoutPlanId) {
     fetchSingleWorkoutPlan();
+    }
   }, [workoutPlanId]);
 
   useEffect(() => {
@@ -58,38 +57,38 @@ console.log(selectedWorkout)
     setUser(user);
   }, []);
 
+  const validateForm = () => {
+    const setsNum = parseInt(sets);
+    const repsNum = parseInt(repetitions);
+
+    if (setsNum <= 0) {
+      toast.error("Sets count must be greater than 0");
+      return false;
+    }
+    if (repsNum <= 0) {
+      toast.error("Repetitions count must be greater than 0");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      return;
+      return toast.error("Please login to continue");
     }
 
-    if (
-      !selectedWorkout ||
-      !exercises ||
-      !sets ||
-      !routine ||
-      !repetitions ||
-      !description
-    ) {
+    if (!selectedWorkout || !exercises || !sets || !repetitions || !description || !date) {
       return toast.error("Please fill all the fields");
+    }
+
+    if (!validateForm()) {
+      return;
     }
 
     const workoutData = {
       userId: user.id,
       sets,
-      routine,
-      date,
-      exercises,
-      repetitions,
-      description,
-      workoutPlanName: selectedWorkout,
-    };
-
-    const updateWorkoutData = {
-      userId: user.id,
-      sets,
-      routine,
       date,
       exercises,
       repetitions,
@@ -101,22 +100,16 @@ console.log(selectedWorkout)
       try {
         const res = await axios.put(
           `http://localhost:8080/workoutPlans/${workoutPlanId}`,
-          updateWorkoutData
+          workoutData
         );
         if (res.status === 200) {
           toast.success("Workout Plans Updated Successfully");
-          setSets("");
-          setRoutine("");
-          setDate("");
-          setExercises("");
-          setRepetitions("");
-          setDescription("");
-          setSelectedWorkout("");
+          resetForm();
           navigate("/");
           setActiveTab("tab3");
         }
       } catch (error) {
-        toast.error("Faild to update workout plans");
+        toast.error("Failed to update workout plans");
       }
     } else {
       try {
@@ -126,13 +119,7 @@ console.log(selectedWorkout)
         );
         if (res.status === 201) {
           toast.success("Workout Plans added Successfully");
-          setSets("");
-          setRoutine("");
-          setDate("");
-          setExercises("");
-          setRepetitions("");
-          setDescription("");
-          setSelectedWorkout("");
+          resetForm();
           navigate("/");
           setActiveTab("tab3");
         }
@@ -142,50 +129,57 @@ console.log(selectedWorkout)
     }
   };
 
+  const resetForm = () => {
+    setSets("");
+    setDate(new Date().toISOString().split('T')[0]);
+    setExercises("");
+    setRepetitions("");
+    setDescription("");
+    setSelectedWorkout("Chest");
+  };
+
   const navigate = useNavigate();
 
   const goToWorkoutPlans = () => {
     navigate("/");
+    setActiveTab("tab3");
   };
 
   return (
     <Layout>
-      <div
-        className="min-h-screen p-4 bg-cover bg-center"
-        style={{ backgroundImage: `url(${backgroundImg})` }}
-      >
-        <form
-          onSubmit={handleSubmit}
-          className="max-w mx-auto my-6 bg-white p-12 rounded-lg shadow-md  mx-auto p-6 rounded-lg shadow-md bg-transparent"
-          style={{ backgroundColor: "rgba(255, 255, 255, 0.75)" }}
-        >
-          <h1 className="mb-4 text-3xl font-semibold text-center text-indigo-600">
-            {editWorkoutPlans ? "Edit Workout Plan" : "Create Workout Plan"}
-          </h1>
-          <div className="text-center mb-4">Please select your Routine</div>
-          <div className="space-y-8">
-            <div className="mb-4">
-              <div className="flex flex-wrap justify-center items-center">
+      <div className="min-h-screen p-4 bg-gradient-to-br from-blue-100 via-indigo-50 to-purple-100">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              {editWorkoutPlans ? "Edit Workout Plan" : "Create Workout Plan"}
+            </h1>
+            <p className="text-gray-600">Design your perfect workout routine</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-100">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Select Workout Type</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {workoutTypes.map((workout, index) => (
-                  <div key={index} className="p-4">
+                  <div key={index} className="p-2">
                     <div
-                      className={`cursor-pointer rounded-lg overflow-hidden transition-transform transform ${
+                      className={`cursor-pointer rounded-xl overflow-hidden transition-all transform hover:scale-105 ${
                         selectedWorkout === workout.name
-                          ? "ring-4 ring-indigo-500"
-                          : ""
+                          ? "ring-4 ring-blue-500 shadow-lg"
+                          : "hover:shadow-md"
                       }`}
                       onClick={() => setSelectedWorkout(workout.name)}
                     >
                       <img
                         src={workout.image}
                         alt={workout.name}
-                        className="w-36 h-24 object-cover"
+                        className="w-full h-32 object-cover rounded-t-xl"
                       />
                       <div
-                        className={`p-2 text-center ${
+                        className={`p-3 text-center font-medium transition-colors ${
                           selectedWorkout === workout.name
-                            ? "bg-indigo-600 text-white"
-                            : "bg-white text-gray-800"
+                            ? "bg-blue-600 text-white"
+                            : "bg-white text-gray-800 hover:bg-gray-50"
                         }`}
                       >
                         {workout.name}
@@ -194,113 +188,103 @@ console.log(selectedWorkout)
                   </div>
                 ))}
               </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="routine"
-                  className="block text-sm font-medium text-gray-700 items-center"
-                >
-                  Routine Name
-                </label>
-                <input
-                  type="text"
-                  id="routine"
-                  value={routine}
-                  onChange={(e) => setRoutine(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Enter routine name"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="exercises"
-                  className="block text-sm font-medium text-gray-700 items-center"
-                >
-                  Excercise Name
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <label htmlFor="exercises" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Exercise Name
                 </label>
                 <input
                   type="text"
                   id="exercises"
                   value={exercises}
                   onChange={(e) => setExercises(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Enter exercises name"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70"
+                  placeholder="Enter exercise name"
+                  required
                 />
               </div>
-              <label
-                htmlFor="sets"
-                className="block text-sm font-medium text-gray-700 items-center"
-              >
-                Sets Count
-              </label>
-              <input
-                type="number"
-                id="sets"
-                value={sets}
-                onChange={(e) => setSets(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter sets count"
-              />
+
+              <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <label htmlFor="sets" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Number of Sets
+                </label>
+                <input
+                  type="number"
+                  id="sets"
+                  value={sets}
+                  onChange={(e) => setSets(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70"
+                  placeholder="Enter number of sets"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <label htmlFor="repetitions" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Number of Repetitions
+                </label>
+                <input
+                  type="number"
+                  id="repetitions"
+                  value={repetitions}
+                  onChange={(e) => setRepetitions(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70"
+                  placeholder="Enter number of repetitions"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <label htmlFor="date" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70"
+                  required
+                />
+              </div>
             </div>
-            <div className="mb-4">
-              <label
-                htmlFor="repetitions"
-                className="block text-sm font-medium text-gray-700 items-center"
-              >
-                Repetitions
-              </label>
-              <input
-                type="number"
-                id="repetitions"
-                value={repetitions}
-                onChange={(e) => setRepetitions(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter repetitions count"
-              />
-            </div>
-            <div className="relative max-w-sm">
-              <label
-                htmlFor="date"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Select Date
-              </label>
-              <input
-                type="date"
-                onChange={(e) => setDate(e.target.value)}
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Select date"
-              />
-            </div>
-            <div className="mb-6">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Description of your workout
+
+            <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
+                Description
               </label>
               <textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows="4"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Describe your workout achievements..."
-              ></textarea>
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[120px] resize-none bg-white/70"
+                placeholder="Describe your workout plan..."
+                required
+              />
             </div>
-          </div>
-          <button
-            type="submit"
-            className="w-full mt-6 px-4 py-2 text-sm font-medium text-white bg-success rounded-md shadow hover:bg-success-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Submit Workout Status
-          </button>
-          <button
-            onClick={goToWorkoutPlans}
-            className="w-full px-4 mt-2 py-2 text-sm font-medium text-black bg-transparent rounded-md shadow hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Cancel
-          </button>
-        </form>
+
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={goToWorkoutPlans}
+                className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-8 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                {editWorkoutPlans ? "Update Plan" : "Create Plan"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </Layout>
   );
