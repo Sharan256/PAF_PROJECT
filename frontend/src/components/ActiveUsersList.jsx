@@ -23,6 +23,7 @@ const ActiveUsersList = ({ loggedInUser }) => {
     // Poll for active users every 30 seconds
     const interval = setInterval(fetchUsers, 30000);
     return () => clearInterval(interval);
+    // Cleanup interval on component unmount
   }, []);
 
   return (
