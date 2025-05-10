@@ -211,9 +211,9 @@ export default function Register() {
                 <p className="mt-1 text-sm text-red-500">{errors.confirmPassword.message}</p>
               )}
             </div>
-
+            
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1"> 
                 Phone Number
               </label>
               <input
