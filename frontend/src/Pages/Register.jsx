@@ -78,7 +78,10 @@ export default function Register() {
       };
 
       const res = await axios.post(`http://localhost:8080/users/register`, user);
-      
+      if (res.status === 200) {
+        toast.success("Registration successful");
+        navigate("/login");
+      }
     } catch (error) {
       if (error?.response) {
         toast.error(error.response.data);
