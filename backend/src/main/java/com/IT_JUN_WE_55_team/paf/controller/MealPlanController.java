@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.IT_JUN_WE_55_team.paf.model.MealPlan;
 import com.IT_JUN_WE_55_team.paf.service.MealPlanService;
 
-
+@RestController
+@RequestMapping("/mealPlans")
+public class MealPlanController {
 
     @Autowired
     private MealPlanService mealPlanService;
@@ -35,11 +37,7 @@ import com.IT_JUN_WE_55_team.paf.service.MealPlanService;
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<MealPlan> createMealPlan(@RequestBody MealPlan mealPlan) {
-        MealPlan savedMealPlan = mealPlanService.createMealPlan(mealPlan);
-        return new ResponseEntity<>(savedMealPlan, HttpStatus.CREATED);
-    }
+   
 
     @PutMapping("/update/{mealPlanId}")
     public ResponseEntity<MealPlan> updateMealPlan(@PathVariable String mealPlanId, @RequestBody MealPlan mealplan) {
