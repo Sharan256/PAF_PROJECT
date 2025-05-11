@@ -321,7 +321,11 @@ const CreateMealPlan = () => {
 
 
             
-           
+            {image && (
+              <img
+                src={URL.createObjectURL(image)}
+                alt="meal"
+                className="w-40 h-40"
               />
             )}
 
@@ -340,7 +344,7 @@ const CreateMealPlan = () => {
               onClick={goToMealPlans}
               className="w-full px-4 mt-2 py-2 text-sm font-medium text-white hover:text-white bg-red-500 rounded-md shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-              Cancel
+              
             </button>
           </div>
         </form>
