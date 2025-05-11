@@ -321,11 +321,7 @@ const CreateMealPlan = () => {
 
 
             
-            {image && (
-              <img
-                src={URL.createObjectURL(image)}
-                alt="meal"
-                className="w-40 h-40"
+           
               />
             )}
 
