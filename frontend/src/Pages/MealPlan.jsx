@@ -35,6 +35,11 @@ const MealPlan = ({ user }) => {
     }
   };
 
+  const navigateEditPage = (mealPlan) => {
+    navigate(`/CreateMealPlan/${mealPlan.mealPlanId}`);
+  };
+
+
   
   return (
     <div
