@@ -128,7 +128,14 @@ export default function Login() {
                   </button>
                 </TERipple>
 
-                
+                <TERipple rippleColor="light" className="w-full">
+                  <button
+                    onClick={() => navigate("/register")}
+                    className="w-full rounded bg-green-600 px-7 py-3 text-sm font-medium uppercase text-white transition duration-150 ease-in-out hover:bg-green-700 focus:outline-none active:bg-green-800"
+                  >
+                    Sign Up
+                  </button>
+                </TERipple>
 
                 <div className="my-4 flex items-center before:flex-1 before:border-t before:border-white-300 after:flex-1 after:border-t after:border-white-300">
                   <p className="mx-4 mb-0 text-center font-semibold dark:text-neutral-200">
