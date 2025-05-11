@@ -26,10 +26,7 @@ public class MealPlanServiceImpl implements MealPlanService {
         return mealPlanRepository.findAll();
     }
 
-    @Override
-    public Optional<MealPlan> getMealPlanById(String mealPlanId) {
-        return mealPlanRepository.findById(mealPlanId);
-    }
+    
 
     @Override
     public MealPlan createMealPlan(MealPlan mealPlan) {
