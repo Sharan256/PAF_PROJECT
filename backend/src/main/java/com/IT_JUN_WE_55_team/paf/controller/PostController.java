@@ -12,8 +12,8 @@ import com.IT_JUN_WE_55_team.paf.service.PostService;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/posts")
+@RestController // Marks this class as a REST controller
+@RequestMapping("/posts") // Base path for all endpoints in this controller
 public class PostController {
 
     @Autowired
