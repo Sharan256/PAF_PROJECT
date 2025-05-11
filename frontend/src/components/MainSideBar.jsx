@@ -2,6 +2,7 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FaHome, FaPlus, FaClipboardList, FaUtensils, FaSignOutAlt, FaUsers } from "react-icons/fa";
 
+// Sidebar component accepts 'user' and 'isOpen' as props
 const MainSideBar = ({ user, isOpen }) => {
   const handleLogout = async () => {
     try {
