@@ -36,13 +36,6 @@ public class CommentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{commentId}")
-    public ResponseEntity<Comment> editComment(@PathVariable String commentId, @RequestBody CommentDTO request) {
-        Comment editedComment = commentService.editComment(commentId, request.getContent());
-        if (editedComment != null) {
-            return new ResponseEntity<>(editedComment, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    
     }
 }

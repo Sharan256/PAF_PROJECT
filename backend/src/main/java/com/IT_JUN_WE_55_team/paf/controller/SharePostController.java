@@ -21,7 +21,11 @@ public class SharePostController {
         return sharePostService.getSharePosts();
     }
 
-    
+    @PostMapping
+    public ResponseEntity<SharePostModel> createSharePost(@RequestBody ShareDTO shareDTO) {
+        SharePostModel savedPost = sharePostService.createSharePost(shareDTO);
+        return new ResponseEntity<>(savedPost, HttpStatus.CREATED);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable String id) {
