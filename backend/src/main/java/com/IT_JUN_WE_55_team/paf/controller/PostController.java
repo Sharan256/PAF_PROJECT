@@ -42,6 +42,8 @@ public class PostController {
         return postService.editPost(postDTO);
     }
 
+  
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable String id) {
         postService.deletePost(id);
