@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequestMapping("/posts") // Base path for all endpoints in this controller
 public class PostController {
 
-    @Autowired
+    @Autowired // Automatically inject the PostService bean
     private PostService postService;
 
     @GetMapping
