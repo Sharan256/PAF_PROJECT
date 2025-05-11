@@ -35,10 +35,7 @@ const MealPlan = ({ user }) => {
     }
   };
 
-  const navigateEditPage = (mealPlan) => {
-    navigate(`/CreateMealPlan/${mealPlan.mealPlanId}`);
-  };
-
+  
   return (
     <div
       className="container mx-auto p-4 min-h-screen"

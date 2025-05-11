@@ -73,6 +73,11 @@ public class MealPlanServiceImpl implements MealPlanService {
         }
     }
 
+    @Override
+    public void deleteMealPlan(String mealPlanId) {
+        mealPlanRepository.deleteById(mealPlanId);
+    }
+
    
 
 }
