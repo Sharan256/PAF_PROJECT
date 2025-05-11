@@ -111,7 +111,7 @@ const MealPlan = ({ user }) => {
                   {mealPlan?.nutritionalInformation}
                 </p>
               </div>
-              <div className="flex justify-end">
+              
                 {user?.id === mealPlan?.userId && (
                   <>
                     <AiFillDelete
