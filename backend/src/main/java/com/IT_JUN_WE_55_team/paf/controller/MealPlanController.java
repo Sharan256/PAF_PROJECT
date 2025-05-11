@@ -37,7 +37,11 @@ public class MealPlanController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-   
+    @PostMapping("/add")
+    public ResponseEntity<MealPlan> createMealPlan(@RequestBody MealPlan mealPlan) {
+        MealPlan savedMealPlan = mealPlanService.createMealPlan(mealPlan);
+        return new ResponseEntity<>(savedMealPlan, HttpStatus.CREATED);
+    }
 
     @PutMapping("/update/{mealPlanId}")
     public ResponseEntity<MealPlan> updateMealPlan(@PathVariable String mealPlanId, @RequestBody MealPlan mealplan) {
