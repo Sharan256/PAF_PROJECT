@@ -43,7 +43,21 @@ public class MealPlanController {
         return new ResponseEntity<>(savedMealPlan, HttpStatus.CREATED);
     }
 
-  
+    @PutMapping("/update/{mealPlanId}")
+    public ResponseEntity<MealPlan> updateMealPlan(@PathVariable String mealPlanId, @RequestBody MealPlan mealplan) {
+        MealPlan updatedMealPlan = mealPlanService.updatMealPlan(mealPlanId, mealplan);
+        if (updatedMealPlan != null) {
+            return new ResponseEntity<>(updatedMealPlan, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/{mealPlanId}")
+    public ResponseEntity<Void> deleteMealPlan(@PathVariable String mealPlanId) {
+        mealPlanService.deleteMealPlan(mealPlanId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 }
 
