@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.IT_JUN_WE_55_team.paf.model.MealPlan;
 import com.IT_JUN_WE_55_team.paf.service.MealPlanService;
 
-@RestController
-@RequestMapping("/mealPlans")
-public class MealPlanController {
+
 
     @Autowired
     private MealPlanService mealPlanService;
